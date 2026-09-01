@@ -1,0 +1,25 @@
+# Virtual environment
+venv/
+.venv/
+
+# Secrets
+.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Pytest
+.pytest_cache/
+
+# PyCharm
+.idea/
+
+# Allure
+allure-results/
+allure-report/
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
