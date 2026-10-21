@@ -1,3 +1,4 @@
+import pytest
 import os
 
 import allure
@@ -7,6 +8,21 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BASE_URL = os.getenv("API_BASE_URL")
+
+@pytest.fixture
+def created_booking_id():
+    with allure.step("Create a booking for the test"):
+        response = requests.post(
+            url=f"{BASE_URL}/booking",
+            json=booking_data,
+            timeout=15,
+        )
+        assert response.status_code == 200, response.text
+
+        response_body = response.json()
+        assert "bookingid" in response_body, response_body
+
+    return response_body["bookingid"]
 
 
 booking_data = {
@@ -44,24 +60,10 @@ def test_create_booking():
 
 
 @allure.title("Successful booking retrieval")
-def test_get_booking_by_id():
-    with allure.step("Send a booking creation request"):
-        create_response = requests.post(
-            url=f"{BASE_URL}/booking",
-            json=booking_data,
-            timeout=15,
-        )
-    with allure.step("Verify HTTP status code 200"):
-        assert create_response.status_code == 200, create_response.text
-
-    with allure.step("Extract the booking ID"):
-        create_response_body = create_response.json()
-        assert "bookingid" in create_response_body, create_response_body
-        booking_id = create_response_body["bookingid"]
-
+def test_get_booking_by_id(created_booking_id):
     with allure.step("Get the booking by ID"):
         response = requests.get(
-            url=f"{BASE_URL}/booking/{booking_id}",
+            url=f"{BASE_URL}/booking/{created_booking_id}",
             timeout=15
         )
 
