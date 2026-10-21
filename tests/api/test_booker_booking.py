@@ -41,3 +41,31 @@ def test_create_booking():
 
     with allure.step("Verify the returned booking data"):
         assert response_body["booking"] == booking_data, response_body
+
+
+@allure.title("Successful booking retrieval")
+def test_get_booking_by_id():
+    with allure.step("Send a booking creation request"):
+        create_response = requests.post(
+            url=f"{BASE_URL}/booking",
+            json=booking_data,
+            timeout=15,
+        )
+    with allure.step("Verify HTTP status code 200"):
+        assert create_response.status_code == 200, create_response.text
+
+    with allure.step("Extract the booking ID"):
+        create_response_body = create_response.json()
+        assert "bookingid" in create_response_body, create_response_body
+        booking_id = create_response_body["bookingid"]
+
+    with allure.step("Get the booking by ID"):
+        response = requests.get(
+            url=f"{BASE_URL}/booking/{booking_id}",
+            timeout=15
+        )
+
+    with allure.step("Verify the returned booking data"):
+        assert response.status_code == 200, response.text
+        response_body = response.json()
+        assert response_body == booking_data, response_body
